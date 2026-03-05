@@ -30,8 +30,25 @@ Key integration points with the official plugin:
 
 **Session data**: Claude Code stores sessions as `~/.claude/projects/<project-hash>/<uuid>.jsonl` where `<project-hash>` is the absolute project path with `/` replaced by `-` (e.g., `-Users-gleb-Projects-foo`). Some projects also have `sessions-index.json` with pre-computed metadata.
 
+## Research
+
+When researching IntelliJ Platform APIs, use context7 MCP before relying on training data. Relevant libraries (all High reputation):
+- `/websites/plugins_jetbrains` — broadest coverage (9k+ snippets, score 82), use as primary source
+- `/jetbrains/intellij-sdk-docs` — GitHub source with inline code examples, good for action system / plugin.xml / extension points
+- `/websites/plugins_jetbrains_intellij` — narrower SDK-only subset, use when the broader source returns too much noise
+
+When adding new features, start by querying the "IntelliJ Platform Extension Point and Listener List" from `/websites/plugins_jetbrains` to discover relevant extension points and listeners before writing code. This is the canonical reference for what the platform exposes.
+
+**API exploration techniques** (ref: https://plugins.jetbrains.com/docs/intellij/explore-api.html):
+- **Extension points**: query the EP list first, then search for `*ExtensionPoints.xml` in platform source; use IntelliJ Platform Explorer to find real implementations in open-source plugins
+- **Source navigation**: use "Go to Implementation" / "Find Usages" on EP interfaces; search for `*Manager` / `*Service` classes; explore the EP interface's package for related utilities
+- **UI reverse-lookup**: search [platform source](https://github.com/JetBrains/intellij-community) for visible UI strings/bundle keys to find the underlying implementation
+- **Debugging**: set breakpoints on `DocumentImpl.changedUpdate()` (doc changes), `HighlightInfoHolder.add()` (highlights), `OpenFileDescriptor` ctor (navigation), `GeneralCommandLine` ctor (process launch), `LightweightHint`/`ActionPopupMenuImpl` ctor (popups)
+- **Avoid internal APIs**: skip classes ending in `Impl`, in `impl` packages, or annotated `@ApiStatus.Internal`
+
 ## Key Conventions
 
 - All actions extend `AnAction`, use `ActionUpdateThread.EDT`, and guard on `e.project != null`
 - Plugin targets IntelliJ Platform 2024.2+ (`sinceBuild = "242"`)
 - The official plugin JAR lives in `claude-code-jetbrains-plugin/lib/` (gitignored) and is declared as a Gradle dependency via `plugin("com.anthropic.code.plugin", "0.1.14-beta")`
+- CFR-decompiled sources of the official plugin are in `claude-code-jetbrains-plugin/decompiled/` — consult these when you need to understand official plugin internals (class signatures, method behavior, extension points) before writing integration code

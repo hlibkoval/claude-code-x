@@ -11,6 +11,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <projectService serviceImplementation="com.github.hlibkoval.claudecodex.services.ClaudeSessionService"/>
+    <projectService serviceImplementation="com.github.hlibkoval.claudecodex.settings.ClaudeCodeXSettings"/>
   </extensions>
 
   <actions>

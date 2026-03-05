@@ -1,7 +1,7 @@
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "2.0.21"
-    id("org.jetbrains.intellij.platform") version "2.2.1"
+    id("org.jetbrains.kotlin.jvm") version "2.3.10"
+    id("org.jetbrains.intellij.platform") version "2.11.0"
 }
 
 group = "com.github.hlibkoval"
@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
     intellijPlatform {
-        intellijIdeaCommunity("2024.2")
+        intellijIdea("2025.3")
         bundledPlugin("org.jetbrains.plugins.terminal")
         plugin("com.anthropic.code.plugin", "0.1.14-beta")
     }
@@ -37,7 +37,7 @@ intellijPlatform {
             url = "https://github.com/hlibkoval"
         }
         ideaVersion {
-            sinceBuild = "242"
+            sinceBuild = "253"
             untilBuild = provider { null }
         }
     }

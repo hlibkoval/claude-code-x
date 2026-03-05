@@ -18,7 +18,14 @@
       "WebSearch",
       "WebFetch(domain:plugins.jetbrains.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:www.jetbrains.com)"
+      "WebFetch(domain:www.jetbrains.com)",
+      "Bash(./gradlew buildPlugin:*)",
+      "Bash(unzip:*)",
+      "Bash(curl:*)",
+      "Bash(gh search:*)",
+      "Bash(./gradlew dependencies:*)",
+      "Bash(mdfind:*)",
+      "Bash(./gradlew compileKotlin:*)"
     ]
   }
 }

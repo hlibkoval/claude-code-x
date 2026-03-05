@@ -1,6 +1,7 @@
 package com.github.hlibkoval.claudecodex.actions
 
 import com.github.hlibkoval.claudecodex.services.ClaudeSessionService
+import com.github.hlibkoval.claudecodex.settings.ClaudeCodeXSettings
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
@@ -25,6 +26,13 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
         val sessions = service.listSessions().take(50)
 
         val actions = mutableListOf<AnAction>()
+
+        val settings = ClaudeCodeXSettings.getInstance(project)
+        actions.add(object : ToggleAction("Open in Editor") {
+            override fun isSelected(e: AnActionEvent): Boolean = settings.openInEditor
+            override fun setSelected(e: AnActionEvent, state: Boolean) { settings.openInEditor = state }
+        })
+        actions.add(Separator.create())
 
         for (session in sessions) {
             val name = (session.title ?: session.firstPrompt ?: session.id.take(8))
