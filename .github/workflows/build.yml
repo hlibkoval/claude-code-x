@@ -27,3 +27,13 @@ jobs:
         with:
           name: claude-code-x
           path: build/distributions/*.zip
+
+      - name: Create release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(grep '^version' build.gradle.kts | sed 's/.*"\(.*\)".*/\1/')
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          TAG="v${VERSION}+${SHORT_SHA}"
+          gh release create "$TAG" build/distributions/*.zip --title "$TAG" --notes "Built from ${{ github.sha }}"
