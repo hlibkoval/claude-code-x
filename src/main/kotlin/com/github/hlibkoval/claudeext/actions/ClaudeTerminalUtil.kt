@@ -7,27 +7,12 @@ import org.jetbrains.plugins.terminal.TerminalToolWindowManager
 
 object ClaudeTerminalUtil {
 
-    fun openClaudeSession(project: Project, extraArgs: String = "", tabName: String = "Claude Code") {
-        val basePath = project.basePath ?: return
-        val terminalManager = TerminalToolWindowManager.getInstance(project)
-        val widget = terminalManager.createShellWidget(basePath, tabName, true, true)
-        val command = buildString {
-            append(PluginSettings.getInstance().claudeCommand)
-            if (extraArgs.isNotBlank()) {
-                append(" ")
-                append(extraArgs)
-            }
-        }
-        widget.sendCommandToExecute(command)
-        terminalManager.toolWindow?.activate(null)
-    }
-
-    fun openClaudeDirect(project: Project, extraArgs: String = "", tabName: String = "Claude Code") {
+    fun openSession(project: Project, extraArgs: List<String> = emptyList(), tabName: String = "Claude Code") {
         val basePath = project.basePath ?: return
         val terminalManager = TerminalToolWindowManager.getInstance(project)
         val claudeCmd = PluginSettings.getInstance().claudeCommand
         val shellCommand = mutableListOf(claudeCmd).apply {
-            if (extraArgs.isNotBlank()) addAll(extraArgs.split(" "))
+            addAll(extraArgs)
         }
         val tabState = TerminalTabState().apply {
             myTabName = tabName

@@ -14,6 +14,6 @@ class NewClaudeSessionAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        ClaudeTerminalUtil.openClaudeSession(project)
+        ClaudeTerminalUtil.openSession(project)
     }
 }
