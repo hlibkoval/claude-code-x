@@ -53,11 +53,15 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
         )
     }
 
-    private val xmlWrapperRegex = Regex("^<([a-zA-Z][a-zA-Z0-9_-]*)(?:\\s[^>]*)?>([\\s\\S]+)</\\1>$")
-
     private fun stripXmlWrapper(text: String): String {
-        val match = xmlWrapperRegex.find(text.trim()) ?: return text
-        return match.groupValues[2].trim()
+        val trimmed = text.trim()
+        // Check if text starts with a valid XML tag
+        val openTag = Regex("^<[a-zA-Z][a-zA-Z0-9_-]*[^>]*>").find(trimmed) ?: return text
+        val inner = trimmed.substring(openTag.range.last + 1)
+        // Strip trailing closing tag (complete or partial)
+        val lastOpen = inner.lastIndexOf("</")
+        val content = if (lastOpen >= 0) inner.substring(0, lastOpen) else inner
+        return content.trim().ifEmpty { text }
     }
 
     private fun formatRelativeTime(epochMillis: Long): String {
