@@ -24,9 +24,7 @@ Key integration points with the official plugin:
 - `PluginSettings.getInstance().claudeCommand` — gets the user-configured `claude` binary path
 - Actions are positioned relative to `com.anthropic.code.plugin.actions.OpenClaudeInTerminalAction`
 
-**Terminal launch**: Uses `TerminalToolWindowManager` to open Claude sessions. Two mechanisms exist:
-- `createShellWidget()` + `sendCommandToExecute()` — shell-based (legacy, being removed)
-- `TerminalTabState.myShellCommand` + `createNewSession()` — direct launch (preferred: faster startup, cleaner env, tab auto-closes on exit)
+**Terminal launch**: Uses the reworked `TerminalToolWindowTabsManager` API (2025.3+) to open Claude sessions via `createTabBuilder().shellCommand().createTab()`. Supports opening in the editor area by detaching the tab and wrapping it in `TerminalViewVirtualFile` (requires `CLOSING_TO_REOPEN` user data key).
 
 **Session data**: Claude Code stores sessions as `~/.claude/projects/<project-hash>/<uuid>.jsonl` where `<project-hash>` is the absolute project path with `/` replaced by `-` (e.g., `-Users-gleb-Projects-foo`). Some projects also have `sessions-index.json` with pre-computed metadata.
 
@@ -49,6 +47,6 @@ When adding new features, start by querying the "IntelliJ Platform Extension Poi
 ## Key Conventions
 
 - All actions extend `AnAction`, use `ActionUpdateThread.EDT`, and guard on `e.project != null`
-- Plugin targets IntelliJ Platform 2024.2+ (`sinceBuild = "242"`)
+- Plugin targets IntelliJ Platform 2025.3+ (`sinceBuild = "253"`)
 - The official plugin JAR lives in `claude-code-jetbrains-plugin/lib/` (gitignored) and is declared as a Gradle dependency via `plugin("com.anthropic.code.plugin", "0.1.14-beta")`
 - CFR-decompiled sources of the official plugin are in `claude-code-jetbrains-plugin/decompiled/` — consult these when you need to understand official plugin internals (class signatures, method behavior, extension points) before writing integration code
