@@ -13,7 +13,7 @@ QoL extensions for the official [Claude Code](https://docs.anthropic.com/en/docs
 ## Requirements
 
 - IntelliJ-based IDE 2024.2+
-- [Claude Code JetBrains plugin](https://plugins.jetbrains.com/plugin/claude-code) (Beta) by Anthropic
+- [Claude Code JetBrains plugin](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-) (Beta) by Anthropic
 
 ## License
 
