@@ -12,9 +12,9 @@ object ClaudeTerminalUtil {
         val basePath = project.basePath ?: return
         val terminalManager = TerminalToolWindowManager.getInstance(project)
         val claudeCmd = resolveCommand(PluginSettings.getInstance().claudeCommand)
-        val shellCommand = mutableListOf(claudeCmd).apply {
-            addAll(extraArgs)
-        }
+        val shell = System.getenv("SHELL") ?: "/bin/zsh"
+        val innerCmd = (listOf(claudeCmd) + extraArgs).joinToString(" ") { shellEscape(it) }
+        val shellCommand = listOf(shell, "-lic", "exec $innerCmd")
         val tabState = TerminalTabState().apply {
             myTabName = tabName
             myWorkingDirectory = basePath
@@ -38,5 +38,10 @@ object ClaudeTerminalUtil {
             if (file.canExecute()) return file.absolutePath
         }
         return cmd
+    }
+
+    private fun shellEscape(s: String): String {
+        if (s.all { it.isLetterOrDigit() || it in "/_.-+" }) return s
+        return "'" + s.replace("'", "'\\''") + "'"
     }
 }
