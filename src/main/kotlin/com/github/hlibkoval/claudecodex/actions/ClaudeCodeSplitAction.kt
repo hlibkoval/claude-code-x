@@ -1,53 +1,40 @@
-package com.github.hlibkoval.claudeext.actions
+package com.github.hlibkoval.claudecodex.actions
 
-import com.github.hlibkoval.claudeext.services.ClaudeSessionService
+import com.github.hlibkoval.claudecodex.services.ClaudeSessionService
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.ui.popup.JBPopup
+import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.wm.impl.SplitButtonAction
 
-class ResumeSessionActionGroup : DefaultActionGroup() {
+class ClaudeCodeSplitAction : SplitButtonAction() {
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     override fun update(e: AnActionEvent) {
-        val project = e.project
-        if (project == null) {
-            e.presentation.isEnabledAndVisible = false
-            return
-        }
-        val service = project.getService(ClaudeSessionService::class.java)
-        e.presentation.isEnabled = service.hasSessions()
-        e.presentation.isPerformGroup = true
+        e.presentation.isEnabledAndVisible = e.project != null
     }
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val sessions = project.getService(ClaudeSessionService::class.java).listSessions()
-        if (sessions.isNotEmpty()) {
-            ClaudeTerminalUtil.openSession(
-                project,
-                listOf("--resume", sessions.first().id),
-                "Claude Code (Resume)"
-            )
-        }
+        ClaudeTerminalUtil.openSession(project)
     }
 
-    override fun getChildren(e: AnActionEvent?): Array<AnAction> {
-        val project = e?.project ?: return AnAction.EMPTY_ARRAY
+    override fun createPopup(e: AnActionEvent): JBPopup {
+        val project = e.project!!
         val service = project.getService(ClaudeSessionService::class.java)
         val sessions = service.listSessions()
-        if (sessions.isEmpty()) return AnAction.EMPTY_ARRAY
 
         val actions = mutableListOf<AnAction>()
 
         for (session in sessions) {
-            val name = session.slug
+            val name = session.title
                 ?: session.firstPrompt?.let { if (it.length > 40) it.take(40) + "..." else it }
                 ?: session.id.take(8)
             val time = formatRelativeTime(session.modified)
             val sessionId = session.id
             actions.add(object : AnAction("$name ($time)") {
                 override fun actionPerformed(e: AnActionEvent) {
-                    val p = e.project ?: return
-                    ClaudeTerminalUtil.openSession(p, listOf("--resume", sessionId), "Claude Code (Resume)")
+                    ClaudeTerminalUtil.openSession(project, listOf("--resume", sessionId), "Claude Code (Resume)")
                 }
             })
         }
@@ -55,12 +42,15 @@ class ResumeSessionActionGroup : DefaultActionGroup() {
         actions.add(Separator.create())
         actions.add(object : AnAction("Browse All Sessions...") {
             override fun actionPerformed(e: AnActionEvent) {
-                val p = e.project ?: return
-                ClaudeTerminalUtil.openSession(p, listOf("--resume"), "Claude Code (Resume)")
+                ClaudeTerminalUtil.openSession(project, listOf("--resume"), "Claude Code (Resume)")
             }
         })
 
-        return actions.toTypedArray()
+        val group = DefaultActionGroup(actions)
+        return JBPopupFactory.getInstance().createActionGroupPopup(
+            null, group, e.dataContext,
+            JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, false
+        )
     }
 
     private fun formatRelativeTime(epochMillis: Long): String {

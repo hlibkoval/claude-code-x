@@ -28,7 +28,7 @@ kotlin {
 
 intellijPlatform {
     pluginConfiguration {
-        id = "com.github.hlibkoval.claude-code-ext"
+        id = "com.github.hlibkoval.claudecodex"
         name = "Claude Code X"
         version = project.version.toString()
         description = "Claude Code X: QoL extensions for the official Claude Code [Beta] plugin by Anthropic"

@@ -1,4 +1,4 @@
-package com.github.hlibkoval.claudeext.actions
+package com.github.hlibkoval.claudecodex.actions
 
 import com.anthropic.code.plugin.settings.PluginSettings
 import com.intellij.openapi.project.Project

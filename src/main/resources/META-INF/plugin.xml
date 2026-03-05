@@ -1,0 +1,29 @@
+<idea-plugin>
+  <id>com.github.hlibkoval.claudecodex</id>
+  <name>Claude Code X</name>
+  <version>0.1.0</version>
+  <vendor url="https://github.com/hlibkoval">Hlib Koval</vendor>
+  <description>Claude Code X: QoL extensions for the official Claude Code [Beta] plugin by Anthropic</description>
+
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.anthropic.code.plugin</depends>
+  <depends>org.jetbrains.plugins.terminal</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <projectService serviceImplementation="com.github.hlibkoval.claudecodex.services.ClaudeSessionService"/>
+  </extensions>
+
+  <actions>
+    <action
+        id="com.github.hlibkoval.claudecodex.ClaudeCodeSplitAction"
+        class="com.github.hlibkoval.claudecodex.actions.ClaudeCodeSplitAction"
+        text="Claude Code"
+        description="Open Claude Code (click) or resume a session (dropdown)"
+        icon="/icons/claude-new.svg">
+      <add-to-group
+          group-id="MainToolbarRight"
+          anchor="after"
+          relative-to-action="com.anthropic.code.plugin.actions.OpenClaudeInTerminalAction"/>
+    </action>
+  </actions>
+</idea-plugin>
