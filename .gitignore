@@ -1,0 +1,24 @@
+# Build
+build/
+out/
+
+# Gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# IntelliJ
+.idea/
+*.iml
+
+# IntelliJ Platform Plugin SDK
+.intellijPlatform/
+
+# OS
+.DS_Store
+
+# Anthropic's official plugin (dependency, not source)
+claude-code-jetbrains-plugin/
+
+# Decompiled source
+META-INF/

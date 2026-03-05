@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(javap:*)",
+      "Bash(java:*)",
+      "Bash(sdk list:*)",
+      "Bash(JAVA_HOME=$HOME/.sdkman/candidates/java/21-tem ./gradlew buildPlugin:*)",
+      "Read(//private/tmp/terminal-decompile/**)",
+      "Bash(jar tf /Users/gleb/.gradle/caches/9.0.0/transforms/8cf9e22d929771040f6018ad8b30a689/transformed/ideaIC-2024.2-aarch64/plugins/terminal/lib/terminal.jar)",
+      "Read(//private/tmp/claude-decompile/**)",
+      "Bash(jar xf /Users/gleb/Projects/jetbrains-claude-code-plugin/claude-code-jetbrains-plugin/lib/claude-code-jetbrains-plugin-0.1.14-beta.jar com/anthropic/code/plugin/services/)",
+      "Read(//Users/gleb/.gradle/caches/9.0.0/transforms/8cf9e22d929771040f6018ad8b30a689/transformed/ideaIC-2024.2-aarch64/plugins/terminal/lib/**)",
+      "Bash(jar -tf terminal.jar)",
+      "Read(//private/tmp/**)",
+      "Bash(jar -xf /Users/gleb/.gradle/caches/9.0.0/transforms/8cf9e22d929771040f6018ad8b30a689/transformed/ideaIC-2024.2-aarch64/plugins/terminal/lib/terminal.jar org/jetbrains/plugins/terminal/TerminalToolWindowManager.class org/jetbrains/plugins/terminal/TerminalWidget.class org/jetbrains/plugins/terminal/ShellTerminalWidget.class org/jetbrains/plugins/terminal/LocalTerminalCustomizer.class)",
+      "Bash(jar:*)",
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "WebFetch(domain:plugins.jetbrains.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:www.jetbrains.com)"
+    ]
+  }
+}
