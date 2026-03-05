@@ -22,14 +22,14 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
     override fun createPopup(e: AnActionEvent): JBPopup {
         val project = e.project!!
         val service = project.getService(ClaudeSessionService::class.java)
-        val sessions = service.listSessions()
+        val sessions = service.listSessions().take(50)
 
         val actions = mutableListOf<AnAction>()
 
         for (session in sessions) {
-            val name = session.title
-                ?: session.firstPrompt?.let { if (it.length > 40) it.take(40) + "..." else it }
-                ?: session.id.take(8)
+            val name = (session.title ?: session.firstPrompt ?: session.id.take(8))
+                .let { stripXmlWrapper(it) }
+                .let { if (it.length > 40) it.take(40) + "..." else it }
             val time = formatRelativeTime(session.modified)
             val sessionId = session.id
             actions.add(object : AnAction("$name ($time)") {
@@ -51,6 +51,13 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
             null, group, e.dataContext,
             JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, false
         )
+    }
+
+    private val xmlWrapperRegex = Regex("^<([a-zA-Z][a-zA-Z0-9_-]*)(?:\\s[^>]*)?>([\\s\\S]+)</\\1>$")
+
+    private fun stripXmlWrapper(text: String): String {
+        val match = xmlWrapperRegex.find(text.trim()) ?: return text
+        return match.groupValues[2].trim()
     }
 
     private fun formatRelativeTime(epochMillis: Long): String {
