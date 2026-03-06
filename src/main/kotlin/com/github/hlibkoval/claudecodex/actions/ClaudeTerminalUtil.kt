@@ -14,7 +14,7 @@ object ClaudeTerminalUtil {
         val basePath = project.basePath ?: return
         val claudeCmd = (listOf(PluginSettings.getInstance().claudeCommand) + extraArgs).joinToString(" ")
         val shell = System.getenv("SHELL") ?: "/bin/zsh"
-        val shellCommand = listOf(shell, "-lc", "exec $claudeCmd")
+        val shellCommand = listOf(shell, "-lic", "exec $claudeCmd")
 
         val tabsManager = TerminalToolWindowTabsManager.getInstance(project)
         val openInEditor = ClaudeCodeXSettings.getInstance(project).openInEditor
