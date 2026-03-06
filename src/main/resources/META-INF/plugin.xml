@@ -14,12 +14,6 @@
     <projectService serviceImplementation="com.github.hlibkoval.claudecodex.settings.ClaudeCodeXSettings"/>
   </extensions>
 
-  <projectListeners>
-    <listener
-        class="com.github.hlibkoval.claudecodex.listeners.ClaudeTerminalCloseListener"
-        topic="com.intellij.openapi.fileEditor.FileEditorManagerListener$Before"/>
-  </projectListeners>
-
   <actions>
     <action
         id="com.github.hlibkoval.claudecodex.ClaudeCodeSplitAction"

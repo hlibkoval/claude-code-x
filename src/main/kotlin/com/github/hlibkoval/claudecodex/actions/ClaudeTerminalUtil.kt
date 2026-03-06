@@ -5,11 +5,8 @@ import com.github.hlibkoval.claudecodex.settings.ClaudeCodeXSettings
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerKeys
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.Key
 import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.terminal.frontend.toolwindow.TerminalToolWindowTabsManager
-
-val CLAUDE_TERMINAL_KEY = Key.create<Boolean>("claudecodex.terminal")
 
 object ClaudeTerminalUtil {
 
@@ -38,7 +35,6 @@ object ClaudeTerminalUtil {
         if (openInEditor) {
             val view = tabsManager.detachTab(tab)
             val file = TerminalViewVirtualFileFactory.create(view)
-            file.putUserData(CLAUDE_TERMINAL_KEY, true)
             file.putUserData(FileEditorManagerKeys.CLOSING_TO_REOPEN, true)
             try {
                 FileEditorManager.getInstance(project).openFile(file, true)
