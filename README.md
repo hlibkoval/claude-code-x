@@ -1,6 +1,6 @@
 # Claude Code X
 
-QoL extensions for the official [Claude Code](https://docs.anthropic.com/en/docs/claude-code) JetBrains plugin by Anthropic.
+Intellij Platform plugin with QoL extensions for the official [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin by Anthropic.
 
 > **Early development** — expect breaking changes.
 
