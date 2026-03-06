@@ -2,6 +2,7 @@
   "permissions": {
     "allow": [
       "Bash(javap:*)",
+      "Bash(*javap *)",
       "Bash(java:*)",
       "Bash(sdk list:*)",
       "Bash(JAVA_HOME=$HOME/.sdkman/candidates/java/21-tem ./gradlew buildPlugin:*)",
@@ -25,7 +26,9 @@
       "Bash(gh search:*)",
       "Bash(./gradlew dependencies:*)",
       "Bash(mdfind:*)",
-      "Bash(./gradlew compileKotlin:*)"
+      "Bash(./gradlew compileKotlin:*)",
+      "Bash(jar tf:*)",
+      "Bash(do jar:*)"
     ]
   }
 }

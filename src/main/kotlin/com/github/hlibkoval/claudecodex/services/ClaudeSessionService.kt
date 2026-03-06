@@ -51,12 +51,13 @@ class ClaudeSessionService(private val project: Project) {
         return entries.mapNotNull { element ->
             if (!element.isJsonObject) return@mapNotNull null
             val obj = element.asJsonObject
+            val isSidechain = obj.get("isSidechain")?.asBoolean ?: false
+            if (isSidechain) return@mapNotNull null
             val sessionId = obj.get("sessionId")?.asString ?: return@mapNotNull null
             val summary = obj.get("summary")?.asString
             val firstPrompt = obj.get("firstPrompt")?.asString
             val modified = obj.get("modified")?.asString?.let { parseIsoTimestamp(it) }
                 ?: obj.get("fileMtime")?.asLong ?: 0L
-            // Check for customTitle in the JSONL file (overrides summary)
             val jsonlFile = File(dir, "$sessionId.jsonl")
             val customTitle = if (jsonlFile.exists()) readCustomTitle(jsonlFile) else null
             ClaudeSession(sessionId, customTitle ?: summary, modified, firstPrompt)

@@ -44,6 +44,18 @@ When adding new features, start by querying the "IntelliJ Platform Extension Poi
 - **Debugging**: set breakpoints on `DocumentImpl.changedUpdate()` (doc changes), `HighlightInfoHolder.add()` (highlights), `OpenFileDescriptor` ctor (navigation), `GeneralCommandLine` ctor (process launch), `LightweightHint`/`ActionPopupMenuImpl` ctor (popups)
 - **Avoid internal APIs**: skip classes ending in `Impl`, in `impl` packages, or annotated `@ApiStatus.Internal`
 
+## Shell Command Conventions
+
+When running `javap` or similar class inspection commands, call the binary directly with inline paths — do NOT assign variables first. This avoids permission prompt mismatches.
+
+```bash
+# GOOD — matches allow rule
+javap -classpath /path/to/jar com.example.ClassName
+
+# BAD — variable assignment prefix breaks allow rule matching
+TERMINAL_JAR="/path/to/jar" && javap -classpath "$TERMINAL_JAR" com.example.ClassName
+```
+
 ## Key Conventions
 
 - All actions extend `AnAction`, use `ActionUpdateThread.EDT`, and guard on `e.project != null`
