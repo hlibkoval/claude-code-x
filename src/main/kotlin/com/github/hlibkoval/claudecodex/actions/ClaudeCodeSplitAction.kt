@@ -32,6 +32,10 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
             override fun isSelected(e: AnActionEvent): Boolean = settings.openInEditor
             override fun setSelected(e: AnActionEvent, state: Boolean) { settings.openInEditor = state }
         })
+        actions.add(object : ToggleAction("--dangerously-skip-permissions") {
+            override fun isSelected(e: AnActionEvent): Boolean = settings.dangerouslySkipPermissions
+            override fun setSelected(e: AnActionEvent, state: Boolean) { settings.dangerouslySkipPermissions = state }
+        })
         actions.add(Separator.create())
 
         for (session in sessions) {
