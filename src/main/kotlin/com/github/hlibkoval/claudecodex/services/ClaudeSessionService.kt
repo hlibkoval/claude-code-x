@@ -39,7 +39,7 @@ class ClaudeSessionService(private val project: Project) {
         }
 
         return dir.listFiles { f -> f.extension == "jsonl" }
-            ?.map { parseJsonlSession(it) }
+            ?.mapNotNull { parseJsonlSession(it) }
             ?.sortedByDescending { it.modified }
             ?: emptyList()
     }
@@ -64,12 +64,12 @@ class ClaudeSessionService(private val project: Project) {
         }.sortedByDescending { it.modified }
     }
 
-    private fun parseJsonlSession(file: File): ClaudeSession {
+    private fun parseJsonlSession(file: File): ClaudeSession? {
         val id = file.nameWithoutExtension
         var customTitle: String? = null
         var firstPrompt: String? = null
 
-        // Read first 20 lines for firstPrompt
+        // Read first 20 lines for firstPrompt and sidechain check
         try {
             file.bufferedReader().use { reader ->
                 var linesRead = 0
@@ -77,6 +77,9 @@ class ClaudeSessionService(private val project: Project) {
                     if (linesRead++ >= 20) break
                     try {
                         val obj = JsonParser.parseString(line).asJsonObject
+                        if (linesRead == 1 && obj.get("isSidechain")?.asBoolean == true) {
+                            return null
+                        }
                         if (firstPrompt == null && obj.get("type")?.asString == "user") {
                             val msg = obj.getAsJsonObject("message")
                             if (msg != null) {
