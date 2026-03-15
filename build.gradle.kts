@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "2.3.10"
@@ -20,10 +22,19 @@ dependencies {
         bundledPlugin("org.jetbrains.plugins.terminal")
         plugin("com.anthropic.code.plugin", "0.1.14-beta")
     }
+    testImplementation("org.junit.jupiter:junit-jupiter:6.0.3")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.0.3")
+    testRuntimeOnly("junit:junit:4.13.2")
 }
 
 kotlin {
     jvmToolchain(21)
+}
+
+tasks {
+    test {
+        useJUnitPlatform()
+    }
 }
 
 intellijPlatform {

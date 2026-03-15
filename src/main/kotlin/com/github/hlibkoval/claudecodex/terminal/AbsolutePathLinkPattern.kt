@@ -1,0 +1,17 @@
+package com.github.hlibkoval.claudecodex.terminal
+
+import com.intellij.execution.filters.HyperlinkInfo
+import com.intellij.openapi.vfs.LocalFileSystem
+import java.io.File
+
+class AbsolutePathLinkPattern(
+    resolveFile: (String) -> Boolean = { path -> File(path).isFile },
+    createHyperlink: (String, Int?, Int?) -> HyperlinkInfo = { path, sl, el ->
+        FileHyperlinkInfo(path, LocalFileSystem.getInstance(), sl, el)
+    },
+) : WrappingLinkPattern(resolveFile, createHyperlink) {
+
+    override val pathRegex = Regex("""(/[^\s:()@]+)(?::(\d+)(?:-(\d+))?)?""")
+
+    override fun resolveToAbsolute(matchedPath: String): String = matchedPath
+}

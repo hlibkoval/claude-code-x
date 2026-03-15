@@ -12,6 +12,7 @@
   <extensions defaultExtensionNs="com.intellij">
     <projectService serviceImplementation="com.github.hlibkoval.claudecodex.services.ClaudeSessionService"/>
     <projectService serviceImplementation="com.github.hlibkoval.claudecodex.settings.ClaudeCodeXSettings"/>
+    <consoleFilterProvider implementation="com.github.hlibkoval.claudecodex.terminal.ClaudeCodeXConsoleFilterProvider"/>
   </extensions>
 
   <actions>
