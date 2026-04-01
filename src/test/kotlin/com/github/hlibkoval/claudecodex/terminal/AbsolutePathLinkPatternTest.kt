@@ -26,12 +26,15 @@ fun List<Filter.ResultItem>.decorations(): List<Filter.ResultItem> =
 
 class AbsolutePathLinkPatternTest {
 
+    private val testHome = "/Users/gleb"
+
     private val knownFiles = mutableSetOf(
         "/Users/gleb/file.txt",
         "/Users/gleb/Projects/jetbrains-claude-code-plugin/README.md",
         "/Users/gleb/Projects/foo/bar.kt",
         "/Users/gleb/Projects/foo/baz.txt",
         "/Users/gleb/Projects/subdir/file.txt",
+        "/Users/gleb/Work/consumer/docs-resources/research-documents/2026/MCOM-1527/investigation.md",
         "/path/notebook.ipynb",
     )
 
@@ -42,6 +45,7 @@ class AbsolutePathLinkPatternTest {
         pattern = AbsolutePathLinkPattern(
             resolveFile = { it in knownFiles },
             createHyperlink = { path, sl, el -> TestHyperlinkInfo(path, sl, el) },
+            userHome = testHome,
         )
     }
 
@@ -195,6 +199,55 @@ class AbsolutePathLinkPatternTest {
         pattern.processLine("/no/such/path/prefix", 0)
         val results2 = pattern.processLine("/something/else.txt", 20)
         assertEquals(0, results2.size)
+    }
+
+    // --- tilde path tests ---
+
+    @Test
+    fun `matches tilde path`() {
+        val line = "see ~/file.txt here"
+        val links = pattern.processLine(line, 0).hyperlinks()
+
+        assertEquals(1, links.size)
+        val info = links[0].hyperlinkInfo as TestHyperlinkInfo
+        assertEquals("/Users/gleb/file.txt", info.path)
+        assertEquals(4, links[0].highlightStartOffset)
+        assertEquals(14, links[0].highlightEndOffset)
+    }
+
+    @Test
+    fun `matches long tilde path`() {
+        val line = "~/Work/consumer/docs-resources/research-documents/2026/MCOM-1527/investigation.md"
+        val links = pattern.processLine(line, 0).hyperlinks()
+
+        assertEquals(1, links.size)
+        val info = links[0].hyperlinkInfo as TestHyperlinkInfo
+        assertEquals("/Users/gleb/Work/consumer/docs-resources/research-documents/2026/MCOM-1527/investigation.md", info.path)
+    }
+
+    @Test
+    fun `matches tilde path with line number`() {
+        val line = "~/Projects/foo/bar.kt:42"
+        val links = pattern.processLine(line, 0).hyperlinks()
+
+        assertEquals(1, links.size)
+        val info = links[0].hyperlinkInfo as TestHyperlinkInfo
+        assertEquals("/Users/gleb/Projects/foo/bar.kt", info.path)
+        assertEquals(42, info.startLine)
+    }
+
+    @Test
+    fun `handles wrapped tilde path across two lines`() {
+        val line1 = "~/Work/consumer/docs-resources/research-documen"
+        val results1 = pattern.processLine(line1, 0)
+        assertEquals(0, results1.size, "line 1 should not produce results (pending)")
+
+        val line2 = "ts/2026/MCOM-1527/investigation.md"
+        val links2 = pattern.processLine(line2, line1.length).hyperlinks()
+
+        assertEquals(1, links2.size)
+        val info = links2[0].hyperlinkInfo as TestHyperlinkInfo
+        assertEquals("/Users/gleb/Work/consumer/docs-resources/research-documents/2026/MCOM-1527/investigation.md", info.path)
     }
 
     @Test
