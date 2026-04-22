@@ -35,9 +35,10 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
         actions.add(Separator.create())
 
         for (session in sessions) {
-            val name = (session.title ?: session.firstPrompt ?: session.id.take(8))
-                .let { stripXmlWrapper(it) }
-                .let { if (it.length > 40) it.take(40) + "..." else it }
+            val title = session.title?.let(SessionTitleParser::parse)?.takeIf { it.isNotBlank() }
+            val prompt = session.firstPrompt?.let(SessionTitleParser::parse)?.takeIf { it.isNotBlank() }
+            val raw = title ?: prompt ?: session.id.take(8)
+            val name = if (raw.length > 40) raw.take(40) + "..." else raw
             val time = formatRelativeTime(session.modified)
             val sessionId = session.id
             actions.add(object : AnAction("$name ($time)") {
@@ -59,17 +60,6 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
             null, group, e.dataContext,
             JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, false
         )
-    }
-
-    private fun stripXmlWrapper(text: String): String {
-        val trimmed = text.trim()
-        // Check if text starts with a valid XML tag
-        val openTag = Regex("^<[a-zA-Z][a-zA-Z0-9_-]*[^>]*>").find(trimmed) ?: return text
-        val inner = trimmed.substring(openTag.range.last + 1)
-        // Strip trailing closing tag (complete or partial)
-        val lastOpen = inner.lastIndexOf("</")
-        val content = if (lastOpen >= 0) inner.substring(0, lastOpen) else inner
-        return content.trim().ifEmpty { text }
     }
 
     private fun formatRelativeTime(epochMillis: Long): String {
