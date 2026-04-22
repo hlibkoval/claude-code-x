@@ -23,7 +23,16 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
     override fun createPopup(e: AnActionEvent): JBPopup {
         val project = e.project!!
         val service = project.getService(ClaudeSessionService::class.java)
-        val sessions = service.listSessions().take(50)
+        val sessions = service.listSessions()
+            .asSequence()
+            .mapNotNull { session ->
+                val title = session.title?.let(SessionTitleParser::parse)?.takeIf { it.isNotBlank() }
+                val prompt = session.firstPrompt?.let(SessionTitleParser::parse)?.takeIf { it.isNotBlank() }
+                val raw = title ?: prompt ?: return@mapNotNull null
+                Triple(session.id, raw, session.modified)
+            }
+            .take(50)
+            .toList()
 
         val actions = mutableListOf<AnAction>()
 
@@ -34,13 +43,9 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
         })
         actions.add(Separator.create())
 
-        for (session in sessions) {
-            val title = session.title?.let(SessionTitleParser::parse)?.takeIf { it.isNotBlank() }
-            val prompt = session.firstPrompt?.let(SessionTitleParser::parse)?.takeIf { it.isNotBlank() }
-            val raw = title ?: prompt ?: session.id.take(8)
+        for ((sessionId, raw, modified) in sessions) {
             val name = if (raw.length > 40) raw.take(40) + "..." else raw
-            val time = formatRelativeTime(session.modified)
-            val sessionId = session.id
+            val time = formatRelativeTime(modified)
             actions.add(object : AnAction("$name ($time)") {
                 override fun actionPerformed(e: AnActionEvent) {
                     ClaudeTerminalUtil.openSession(project, listOf("--resume", sessionId), "Claude Code (Resume)")
