@@ -37,10 +37,12 @@ When researching IntelliJ Platform APIs, use context7 MCP before relying on trai
 
 When adding new features, start by querying the "IntelliJ Platform Extension Point and Listener List" from `/websites/plugins_jetbrains` to discover relevant extension points and listeners before writing code. This is the canonical reference for what the platform exposes.
 
+**Local platform source** (gitignored): a shallow clone of `JetBrains/intellij-community` pinned to branch `261` (2026.1) lives at `intellij-community/` in the project root. Use it for grep/glob searches over real platform source — extension point definitions (`*ExtensionPoints.xml`), EP interfaces, `*Manager`/`*Service` classes, UI bundle keys, and reference implementations — without round-tripping to the web. Prefer this over GitHub search when you need to read code locally or chain searches. Keep context7 as the source of truth for narrative docs and API syntax; use the clone for source reading.
+
 **API exploration techniques** (ref: https://plugins.jetbrains.com/docs/intellij/explore-api.html):
-- **Extension points**: query the EP list first, then search for `*ExtensionPoints.xml` in platform source; use IntelliJ Platform Explorer to find real implementations in open-source plugins
-- **Source navigation**: use "Go to Implementation" / "Find Usages" on EP interfaces; search for `*Manager` / `*Service` classes; explore the EP interface's package for related utilities
-- **UI reverse-lookup**: search [platform source](https://github.com/JetBrains/intellij-community) for visible UI strings/bundle keys to find the underlying implementation
+- **Extension points**: query the EP list first, then grep `intellij-community/` for `*ExtensionPoints.xml`; use IntelliJ Platform Explorer to find real implementations in open-source plugins
+- **Source navigation**: grep `intellij-community/` for EP interfaces, `*Manager` / `*Service` classes, and related utilities in the interface's package
+- **UI reverse-lookup**: grep `intellij-community/` for visible UI strings/bundle keys to find the underlying implementation
 - **Debugging**: set breakpoints on `DocumentImpl.changedUpdate()` (doc changes), `HighlightInfoHolder.add()` (highlights), `OpenFileDescriptor` ctor (navigation), `GeneralCommandLine` ctor (process launch), `LightweightHint`/`ActionPopupMenuImpl` ctor (popups)
 - **Avoid internal APIs**: skip classes ending in `Impl`, in `impl` packages, or annotated `@ApiStatus.Internal`
 

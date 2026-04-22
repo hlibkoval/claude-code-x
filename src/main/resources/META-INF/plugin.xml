@@ -12,7 +12,13 @@
   <extensions defaultExtensionNs="com.intellij">
     <projectService serviceImplementation="com.github.hlibkoval.claudecodex.services.ClaudeSessionService"/>
     <projectService serviceImplementation="com.github.hlibkoval.claudecodex.settings.ClaudeCodeXSettings"/>
+    <projectService serviceImplementation="com.github.hlibkoval.claudecodex.toolwindow.ClaudeToolWindowManager"/>
     <consoleFilterProvider implementation="com.github.hlibkoval.claudecodex.terminal.ClaudeCodeXConsoleFilterProvider"/>
+    <toolWindow id="Claude Code"
+                anchor="right"
+                canCloseContents="true"
+                icon="/icons/claude-new.svg"
+                factoryClass="com.github.hlibkoval.claudecodex.toolwindow.ClaudeToolWindowFactory"/>
   </extensions>
 
   <actions>

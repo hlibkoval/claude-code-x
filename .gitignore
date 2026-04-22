@@ -22,3 +22,6 @@ claude-code-jetbrains-plugin/
 
 # Decompiled source
 META-INF/
+
+# IntelliJ Platform source (local reference clone)
+intellij-community/

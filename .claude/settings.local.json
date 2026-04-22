@@ -28,7 +28,11 @@
       "Bash(mdfind:*)",
       "Bash(./gradlew compileKotlin:*)",
       "Bash(jar tf:*)",
-      "Bash(do jar:*)"
+      "Bash(do jar:*)",
+      "WebFetch(domain:docs.junit.org)",
+      "WebFetch(domain:central.sonatype.com)",
+      "Bash(./gradlew test:*)",
+      "Bash(./gradlew clean:*)"
     ]
   }
 }

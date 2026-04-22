@@ -2,10 +2,10 @@ package com.github.hlibkoval.claudecodex.actions
 
 import com.anthropic.code.plugin.settings.PluginSettings
 import com.github.hlibkoval.claudecodex.settings.ClaudeCodeXSettings
+import com.github.hlibkoval.claudecodex.toolwindow.ClaudeToolWindowManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerKeys
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.terminal.frontend.toolwindow.TerminalToolWindowTabsManager
 
 object ClaudeTerminalUtil {
@@ -25,14 +25,13 @@ object ClaudeTerminalUtil {
         val tabsManager = TerminalToolWindowTabsManager.getInstance(project)
         val openInEditor = ClaudeCodeXSettings.getInstance(project).openInEditor
 
-        val tab = tabsManager.createTabBuilder()
-            .shellCommand(shellCommand)
-            .workingDirectory(basePath)
-            .tabName(tabName)
-            .requestFocus(true)
-            .createTab()
-
         if (openInEditor) {
+            val tab = tabsManager.createTabBuilder()
+                .shellCommand(shellCommand)
+                .workingDirectory(basePath)
+                .tabName(tabName)
+                .requestFocus(true)
+                .createTab()
             val view = tabsManager.detachTab(tab)
             val file = TerminalViewVirtualFileFactory.create(view)
             file.putUserData(FileEditorManagerKeys.CLOSING_TO_REOPEN, true)
@@ -42,7 +41,14 @@ object ClaudeTerminalUtil {
                 file.putUserData(FileEditorManagerKeys.CLOSING_TO_REOPEN, null)
             }
         } else {
-            ToolWindowManager.getInstance(project).getToolWindow("Terminal")?.activate(null)
+            val tab = tabsManager.createTabBuilder()
+                .shellCommand(shellCommand)
+                .workingDirectory(basePath)
+                .tabName(tabName)
+                .requestFocus(true)
+                .shouldAddToToolWindow(false)
+                .createTab()
+            ClaudeToolWindowManager.getInstance(project).attachTabToClaudeToolWindow(tab, requestFocus = true)
         }
     }
 }
