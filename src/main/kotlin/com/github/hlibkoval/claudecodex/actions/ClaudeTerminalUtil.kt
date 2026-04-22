@@ -12,13 +12,7 @@ object ClaudeTerminalUtil {
 
     fun openSession(project: Project, extraArgs: List<String> = emptyList(), tabName: String = "Claude Code") {
         val basePath = project.basePath ?: return
-        val allArgs = buildList {
-            addAll(extraArgs)
-            if (ClaudeCodeXSettings.getInstance(project).dangerouslySkipPermissions) {
-                add("--dangerously-skip-permissions")
-            }
-        }
-        val claudeCmd = (listOf(PluginSettings.getInstance().claudeCommand) + allArgs).joinToString(" ")
+        val claudeCmd = (listOf(PluginSettings.getInstance().claudeCommand) + extraArgs).joinToString(" ")
         val shell = System.getenv("SHELL") ?: "/bin/zsh"
         val shellCommand = listOf(shell, "-lic", "exec $claudeCmd")
 
