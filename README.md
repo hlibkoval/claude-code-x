@@ -14,7 +14,13 @@ Intellij Platform plugin with QoL extensions for the official [Claude Code](http
 ## Requirements
 
 - IntelliJ-based IDE 2025.3+
-- [Claude Code JetBrains plugin](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-) (Beta) by Anthropic
+- [Claude Code JetBrains plugin](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-) (Beta) by Anthropic — install this first
+
+## Installation
+
+1. Download the latest `.zip` from [Releases](https://github.com/hlibkoval/claude-code-x/releases).
+2. In your IDE, open **Settings → Plugins**, click the gear icon, and choose **Install Plugin from Disk…**.
+3. Select the downloaded `.zip` and restart the IDE when prompted.
 
 ## License
 
