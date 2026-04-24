@@ -29,16 +29,12 @@ object ClaudeTerminalUtil {
                 .shellCommand(shellCommand)
                 .workingDirectory(basePath)
                 .tabName(tabName)
-                .requestFocus(true)
+                .requestFocus(false)
                 .createTab()
             val view = tabsManager.detachTab(tab)
             val file = TerminalViewVirtualFileFactory.create(view)
             file.putUserData(FileEditorManagerKeys.CLOSING_TO_REOPEN, true)
-            try {
-                FileEditorManager.getInstance(project).openFile(file, true)
-            } finally {
-                file.putUserData(FileEditorManagerKeys.CLOSING_TO_REOPEN, null)
-            }
+            FileEditorManager.getInstance(project).openFile(file, true)
         } else {
             val tab = tabsManager.createTabBuilder()
                 .shellCommand(shellCommand)
