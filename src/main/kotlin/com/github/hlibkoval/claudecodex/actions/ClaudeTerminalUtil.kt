@@ -10,14 +10,19 @@ import com.intellij.terminal.frontend.toolwindow.TerminalToolWindowTabsManager
 
 object ClaudeTerminalUtil {
 
-    fun openSession(project: Project, extraArgs: List<String> = emptyList(), tabName: String = "Claude Code") {
+    fun openSession(
+        project: Project,
+        extraArgs: List<String> = emptyList(),
+        tabName: String = "Claude Code",
+        forceInToolWindow: Boolean = false,
+    ) {
         val basePath = project.basePath ?: return
         val claudeCmd = (listOf(PluginSettings.getInstance().claudeCommand) + extraArgs).joinToString(" ")
         val shell = System.getenv("SHELL") ?: "/bin/zsh"
         val shellCommand = listOf(shell, "-lic", "exec $claudeCmd")
 
         val tabsManager = TerminalToolWindowTabsManager.getInstance(project)
-        val openInEditor = ClaudeCodeXSettings.getInstance(project).openInEditor
+        val openInEditor = !forceInToolWindow && ClaudeCodeXSettings.getInstance(project).openInEditor
 
         if (openInEditor) {
             val tab = tabsManager.createTabBuilder()
