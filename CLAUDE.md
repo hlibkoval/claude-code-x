@@ -61,6 +61,6 @@ TERMINAL_JAR="/path/to/jar" && javap -classpath "$TERMINAL_JAR" com.example.Clas
 ## Key Conventions
 
 - All actions extend `AnAction`, use `ActionUpdateThread.EDT`, and guard on `e.project != null`
-- Plugin targets IntelliJ Platform 2025.3+ (`sinceBuild = "253"`)
+- Plugin targets IntelliJ Platform 2026.1+ (`sinceBuild = "261"`)
 - The official plugin JAR lives in `claude-code-jetbrains-plugin/lib/` (gitignored) and is declared as a Gradle dependency via `plugin("com.anthropic.code.plugin", "0.1.14-beta")`
 - CFR-decompiled sources of the official plugin are in `claude-code-jetbrains-plugin/decompiled/` — consult these when you need to understand official plugin internals (class signatures, method behavior, extension points) before writing integration code

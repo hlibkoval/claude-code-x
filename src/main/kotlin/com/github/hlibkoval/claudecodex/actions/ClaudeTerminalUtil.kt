@@ -31,8 +31,9 @@ object ClaudeTerminalUtil {
                 .tabName(tabName)
                 .requestFocus(false)
                 .createTab()
+            val closeOnProcessTermination = tab.closeOnProcessTermination
             val view = tabsManager.detachTab(tab)
-            val file = TerminalViewVirtualFileFactory.create(view)
+            val file = TerminalViewVirtualFileFactory.create(view, closeOnProcessTermination)
             file.putUserData(FileEditorManagerKeys.CLOSING_TO_REOPEN, true)
             FileEditorManager.getInstance(project).openFile(file, true)
         } else {

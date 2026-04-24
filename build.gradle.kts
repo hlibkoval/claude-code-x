@@ -18,7 +18,7 @@ repositories {
 
 dependencies {
     intellijPlatform {
-        intellijIdea("2025.3")
+        intellijIdea("2026.1.1")
         bundledPlugin("org.jetbrains.plugins.terminal")
         plugin("com.anthropic.code.plugin", "0.1.14-beta")
     }
@@ -48,7 +48,7 @@ intellijPlatform {
             url = "https://github.com/hlibkoval"
         }
         ideaVersion {
-            sinceBuild = "253"
+            sinceBuild = "261"
             untilBuild = provider { null }
         }
     }
