@@ -6,8 +6,16 @@ import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.wm.impl.SplitButtonAction
+import com.intellij.ui.scale.JBUIScale
+import com.intellij.util.ui.UIUtil
+import java.awt.FontMetrics
+import javax.swing.JLabel
 
 class ClaudeCodeSplitAction : SplitButtonAction() {
+
+    companion object {
+        private const val MAX_TITLE_WIDTH_PX = 300
+    }
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
@@ -43,8 +51,10 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
         })
         actions.add(Separator.create())
 
+        val fm = labelFontMetrics()
+        val maxTitlePx = JBUIScale.scale(MAX_TITLE_WIDTH_PX)
         for ((sessionId, raw, modified) in sessions) {
-            val name = if (raw.length > 40) raw.take(40) + "..." else raw
+            val name = truncateToWidth(raw, maxTitlePx, fm)
             val time = formatRelativeTime(modified)
             actions.add(object : AnAction("$name ($time)") {
                 override fun actionPerformed(e: AnActionEvent) {
@@ -65,6 +75,25 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
             null, group, e.dataContext,
             JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, false
         )
+    }
+
+    private fun labelFontMetrics(): FontMetrics {
+        val label = JLabel()
+        return label.getFontMetrics(UIUtil.getLabelFont())
+    }
+
+    private fun truncateToWidth(text: String, maxWidthPx: Int, fm: FontMetrics): String {
+        if (fm.stringWidth(text) <= maxWidthPx) return text
+        val ellipsis = "..."
+        val budget = maxWidthPx - fm.stringWidth(ellipsis)
+        if (budget <= 0) return ellipsis
+        var lo = 0
+        var hi = text.length
+        while (lo < hi) {
+            val mid = (lo + hi + 1) / 2
+            if (fm.stringWidth(text.substring(0, mid)) <= budget) lo = mid else hi = mid - 1
+        }
+        return text.substring(0, lo).trimEnd() + ellipsis
     }
 
     private fun formatRelativeTime(epochMillis: Long): String {
