@@ -1,10 +1,13 @@
 package com.github.hlibkoval.claudecodex.toolwindow
 
 import com.github.hlibkoval.claudecodex.actions.ClaudeTerminalUtil
+import com.github.hlibkoval.claudecodex.settings.ClaudeCodeXSettings
+import com.github.hlibkoval.claudecodex.startup.ClaudeEditorTabKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
@@ -33,6 +36,8 @@ class ClaudeToolWindowManager(private val project: Project) {
     fun autoStartIfEmpty(toolWindow: ToolWindow) {
         if (toolWindow.id != TOOL_WINDOW_ID) return
         if (toolWindow.contentManager.contents.isNotEmpty()) return
+        if (ClaudeCodeXSettings.getInstance(project).openInEditor) return
+        if (hasClaudeEditorTab()) return
         if (!autoStartInFlight.compareAndSet(false, true)) return
 
         ApplicationManager.getApplication().invokeLater({
@@ -44,6 +49,12 @@ class ClaudeToolWindowManager(private val project: Project) {
                 autoStartInFlight.set(false)
             }
         }, ModalityState.defaultModalityState(), project.disposed)
+    }
+
+    private fun hasClaudeEditorTab(): Boolean {
+        return FileEditorManager.getInstance(project).openFiles.any {
+            it.getUserData(ClaudeEditorTabKeys.CLAUDE_TAB_MARKER) == true
+        }
     }
 
     companion object {

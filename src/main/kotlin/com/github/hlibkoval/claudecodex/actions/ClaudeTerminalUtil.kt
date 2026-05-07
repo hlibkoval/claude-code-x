@@ -2,9 +2,11 @@ package com.github.hlibkoval.claudecodex.actions
 
 import com.anthropic.code.plugin.settings.PluginSettings
 import com.github.hlibkoval.claudecodex.settings.ClaudeCodeXSettings
+import com.github.hlibkoval.claudecodex.startup.ClaudeEditorTabKeys
 import com.github.hlibkoval.claudecodex.toolwindow.ClaudeToolWindowManager
-import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerKeys
+import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
+import com.intellij.openapi.fileEditor.impl.FileEditorOpenOptions
 import com.intellij.openapi.project.Project
 import com.intellij.terminal.frontend.toolwindow.TerminalToolWindowTabsManager
 
@@ -15,6 +17,7 @@ object ClaudeTerminalUtil {
         extraArgs: List<String> = emptyList(),
         tabName: String = "Claude Code",
         forceInToolWindow: Boolean = false,
+        requestFocus: Boolean = true,
     ) {
         val basePath = project.basePath ?: return
         val claudeCmd = (listOf(PluginSettings.getInstance().claudeCommand) + extraArgs).joinToString(" ")
@@ -35,16 +38,30 @@ object ClaudeTerminalUtil {
             val view = tabsManager.detachTab(tab)
             val file = TerminalViewVirtualFileFactory.create(view, closeOnProcessTermination)
             file.putUserData(FileEditorManagerKeys.CLOSING_TO_REOPEN, true)
-            FileEditorManager.getInstance(project).openFile(file, true)
+            file.putUserData(FileEditorManagerKeys.FORBID_TAB_SPLIT, true)
+            file.putUserData(FileEditorManagerKeys.FORBID_PREVIEW_TAB, true)
+            file.putUserData(ClaudeEditorTabKeys.CLAUDE_TAB_MARKER, true)
+
+            val manager = FileEditorManagerEx.getInstanceEx(project)
+            manager.openFile(
+                file = file,
+                window = null,
+                options = FileEditorOpenOptions(
+                    selectAsCurrent = requestFocus,
+                    reuseOpen = true,
+                    requestFocus = requestFocus,
+                    pin = true,
+                ),
+            )
         } else {
             val tab = tabsManager.createTabBuilder()
                 .shellCommand(shellCommand)
                 .workingDirectory(basePath)
                 .tabName(tabName)
-                .requestFocus(true)
+                .requestFocus(requestFocus)
                 .shouldAddToToolWindow(false)
                 .createTab()
-            ClaudeToolWindowManager.getInstance(project).attachTabToClaudeToolWindow(tab, requestFocus = true)
+            ClaudeToolWindowManager.getInstance(project).attachTabToClaudeToolWindow(tab, requestFocus = requestFocus)
         }
     }
 }

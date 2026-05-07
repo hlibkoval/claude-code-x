@@ -19,7 +19,14 @@
                 canCloseContents="true"
                 icon="/icons/claude-new.svg"
                 factoryClass="com.github.hlibkoval.claudecodex.toolwindow.ClaudeToolWindowFactory"/>
+    <postStartupActivity implementation="com.github.hlibkoval.claudecodex.startup.OpenClaudeOnStartupActivity"/>
   </extensions>
+
+  <projectListeners>
+    <listener
+        class="com.github.hlibkoval.claudecodex.startup.ClaudeEditorTabReopenListener"
+        topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+  </projectListeners>
 
   <actions>
     <action
@@ -33,5 +40,11 @@
           anchor="after"
           relative-to-action="com.anthropic.code.plugin.actions.OpenClaudeInTerminalAction"/>
     </action>
+    <action
+        id="com.github.hlibkoval.claudecodex.OpenClaudeInEditorAction"
+        class="com.github.hlibkoval.claudecodex.actions.OpenClaudeInEditorAction"
+        text="Open Claude in Editor"
+        description="Open the Claude Code terminal as a pinned editor tab"
+        icon="/icons/claude-new.svg"/>
   </actions>
 </idea-plugin>

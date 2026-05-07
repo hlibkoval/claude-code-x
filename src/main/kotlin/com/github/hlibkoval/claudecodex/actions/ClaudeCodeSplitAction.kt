@@ -84,9 +84,14 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
             isOpaque = false
             addItemListener { settings.openInEditor = isSelected }
         }
+        val openOnStartup = JBCheckBox("Open on startup", settings.openOnStartup).apply {
+            isOpaque = false
+            addItemListener { settings.openOnStartup = isSelected }
+        }
         val southPanel = JPanel(BorderLayout()).apply {
             border = JBUI.Borders.empty(4, 8)
             add(openInEditor, BorderLayout.WEST)
+            add(openOnStartup, BorderLayout.EAST)
         }
 
         @Suppress("UNCHECKED_CAST")
