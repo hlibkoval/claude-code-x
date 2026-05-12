@@ -36,14 +36,19 @@ class ClaudeToolWindowManager(private val project: Project) {
     fun autoStartIfEmpty(toolWindow: ToolWindow) {
         if (toolWindow.id != TOOL_WINDOW_ID) return
         if (toolWindow.contentManager.contents.isNotEmpty()) return
-        if (ClaudeCodeXSettings.getInstance(project).openInEditor) return
+        val settings = ClaudeCodeXSettings.getInstance(project)
+        if (settings.openInEditor) return
         if (hasClaudeEditorTab()) return
         if (!autoStartInFlight.compareAndSet(false, true)) return
 
         ApplicationManager.getApplication().invokeLater({
             try {
                 if (toolWindow.contentManager.contents.isEmpty()) {
-                    ClaudeTerminalUtil.openSession(project, forceInToolWindow = true)
+                    if (settings.useAgentsMode) {
+                        ClaudeTerminalUtil.openAgentsView(project, forceInToolWindow = true)
+                    } else {
+                        ClaudeTerminalUtil.openSession(project, forceInToolWindow = true)
+                    }
                 }
             } finally {
                 autoStartInFlight.set(false)
@@ -53,7 +58,8 @@ class ClaudeToolWindowManager(private val project: Project) {
 
     private fun hasClaudeEditorTab(): Boolean {
         return FileEditorManager.getInstance(project).openFiles.any {
-            it.getUserData(ClaudeEditorTabKeys.CLAUDE_TAB_MARKER) == true
+            it.getUserData(ClaudeEditorTabKeys.CLAUDE_TAB_MARKER) == true ||
+                it.getUserData(ClaudeEditorTabKeys.CLAUDE_AGENTS_TAB_MARKER) == true
         }
     }
 

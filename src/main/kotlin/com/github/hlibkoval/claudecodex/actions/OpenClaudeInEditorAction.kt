@@ -20,7 +20,11 @@ class OpenClaudeInEditorAction : AnAction() {
         val previousOpenInEditor = settings.openInEditor
         settings.openInEditor = true
         try {
-            ClaudeTerminalUtil.openSession(project, requestFocus = true)
+            if (settings.useAgentsMode) {
+                ClaudeTerminalUtil.openAgentsView(project, requestFocus = true)
+            } else {
+                ClaudeTerminalUtil.openSession(project, requestFocus = true)
+            }
         } finally {
             settings.openInEditor = previousOpenInEditor
         }

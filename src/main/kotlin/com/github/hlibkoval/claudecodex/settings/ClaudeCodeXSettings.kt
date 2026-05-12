@@ -10,6 +10,7 @@ class ClaudeCodeXSettings : SimplePersistentStateComponent<ClaudeCodeXSettings.S
     class State : BaseState() {
         var openInEditor by property(false)
         var openOnStartup by property(false)
+        var useAgentsMode by property(false)
     }
 
     var openInEditor: Boolean
@@ -19,6 +20,10 @@ class ClaudeCodeXSettings : SimplePersistentStateComponent<ClaudeCodeXSettings.S
     var openOnStartup: Boolean
         get() = state.openOnStartup
         set(value) { state.openOnStartup = value }
+
+    var useAgentsMode: Boolean
+        get() = state.useAgentsMode
+        set(value) { state.useAgentsMode = value }
 
     companion object {
         fun getInstance(project: Project): ClaudeCodeXSettings =

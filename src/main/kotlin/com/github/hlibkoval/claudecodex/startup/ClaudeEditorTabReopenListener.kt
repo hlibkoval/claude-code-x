@@ -10,7 +10,9 @@ import com.intellij.openapi.vfs.VirtualFile
 internal class ClaudeEditorTabReopenListener(private val project: Project) : FileEditorManagerListener {
 
     override fun fileClosed(source: FileEditorManager, file: VirtualFile) {
-        if (file.getUserData(ClaudeEditorTabKeys.CLAUDE_TAB_MARKER) != true) return
+        val isClaudeTab = file.getUserData(ClaudeEditorTabKeys.CLAUDE_TAB_MARKER) == true ||
+            file.getUserData(ClaudeEditorTabKeys.CLAUDE_AGENTS_TAB_MARKER) == true
+        if (!isClaudeTab) return
         if (file.getUserData(FileEditorManagerKeys.CLOSING_TO_REOPEN) == true) return
         if (project.isDisposed || !project.isOpen) return
 

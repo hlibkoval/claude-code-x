@@ -21,6 +21,7 @@ import java.awt.Font
 import java.awt.FontMetrics
 import java.awt.Graphics
 import java.awt.Insets
+import javax.swing.BoxLayout
 import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.JPanel
@@ -52,32 +53,41 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        ClaudeTerminalUtil.openSession(project)
+        val settings = ClaudeCodeXSettings.getInstance(project)
+        if (settings.useAgentsMode) {
+            ClaudeTerminalUtil.openAgentsView(project)
+        } else {
+            ClaudeTerminalUtil.openSession(project)
+        }
     }
 
     override fun createPopup(e: AnActionEvent): JBPopup {
         val project = e.project!!
-        val service = project.getService(ClaudeSessionService::class.java)
         val settings = ClaudeCodeXSettings.getInstance(project)
 
-        val items = buildList<SessionPopupItem> {
-            val fm = labelFontMetrics()
-            val maxTitlePx = JBUIScale.scale(MAX_TITLE_WIDTH_PX)
-            service.listSessions().asSequence()
-                .mapNotNull { s ->
-                    val title = s.title?.let(SessionTitleParser::parse)?.takeIf { it.isNotBlank() }
-                    val prompt = s.firstPrompt?.let(SessionTitleParser::parse)?.takeIf { it.isNotBlank() }
-                    val raw = title ?: prompt ?: return@mapNotNull null
-                    SessionPopupItem.Session(
-                        id = s.id,
-                        displayTitle = truncateToWidth(raw, maxTitlePx, fm),
-                        time = formatRelativeTime(s.modified),
-                        searchText = raw,
-                    )
-                }
-                .take(50)
-                .forEach { add(it) }
-            add(SessionPopupItem.BrowseAll)
+        val items = if (settings.useAgentsMode) {
+            emptyList()
+        } else {
+            val service = project.getService(ClaudeSessionService::class.java)
+            buildList<SessionPopupItem> {
+                val fm = labelFontMetrics()
+                val maxTitlePx = JBUIScale.scale(MAX_TITLE_WIDTH_PX)
+                service.listSessions().asSequence()
+                    .mapNotNull { s ->
+                        val title = s.title?.let(SessionTitleParser::parse)?.takeIf { it.isNotBlank() }
+                        val prompt = s.firstPrompt?.let(SessionTitleParser::parse)?.takeIf { it.isNotBlank() }
+                        val raw = title ?: prompt ?: return@mapNotNull null
+                        SessionPopupItem.Session(
+                            id = s.id,
+                            displayTitle = truncateToWidth(raw, maxTitlePx, fm),
+                            time = formatRelativeTime(s.modified),
+                            searchText = raw,
+                        )
+                    }
+                    .take(50)
+                    .forEach { add(it) }
+                add(SessionPopupItem.BrowseAll)
+            }
         }
 
         val openInEditor = JBCheckBox("Open in editor", settings.openInEditor).apply {
@@ -88,10 +98,16 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
             isOpaque = false
             addItemListener { settings.openOnStartup = isSelected }
         }
-        val southPanel = JPanel(BorderLayout()).apply {
+        val useAgentsMode = JBCheckBox("Use agents mode", settings.useAgentsMode).apply {
+            isOpaque = false
+            addItemListener { settings.useAgentsMode = isSelected }
+        }
+        val southPanel = JPanel().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
             border = JBUI.Borders.empty(4, 8)
-            add(openInEditor, BorderLayout.WEST)
-            add(openOnStartup, BorderLayout.EAST)
+            add(openInEditor)
+            add(openOnStartup)
+            add(useAgentsMode)
         }
 
         @Suppress("UNCHECKED_CAST")
@@ -107,7 +123,7 @@ class ClaudeCodeSplitAction : SplitButtonAction() {
                     SessionPopupItem.BrowseAll -> " "
                 }
             }
-            .setFilterAlwaysVisible(true)
+            .setFilterAlwaysVisible(items.isNotEmpty())
             .setAutoPackHeightOnFiltering(true)
             .setItemChosenCallback { item ->
                 when (item) {

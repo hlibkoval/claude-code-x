@@ -27,6 +27,13 @@ internal class OpenClaudeOnStartupActivity : ProjectActivity {
         props.unsetValue(ClaudeEditorTabKeys.PROP_USER_CLOSED_THIS_SESSION)
         if (!props.getBoolean(ClaudeEditorTabKeys.PROP_LAST_OPEN_INTENT, true)) return
 
+        if (settings.useAgentsMode) {
+            withContext(Dispatchers.EDT) {
+                ClaudeTerminalUtil.openAgentsView(project, requestFocus = false)
+            }
+            return
+        }
+
         val previousOpenInEditor = settings.openInEditor
         settings.openInEditor = true
         try {
